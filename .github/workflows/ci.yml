@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build
+        run: dotnet build src/clean-sweep.csproj -c Release
+
+      - name: Test
+        run: dotnet test tests --no-build -c Release
+
+      - name: Publish exe
+        run: dotnet publish src/clean-sweep.csproj -c Release -r win-x64 --self-contained false -o publish
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-sweep-${{ github.sha }}
+          path: publish/
+          if-no-files-found: error
+
+  release:
+    name: Attach binaries to release
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: windows-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: clean-sweep-${{ github.sha }}
+
+      - name: Generate checksum
+        shell: pwsh
+        run: |
+          (Get-FileHash clean-sweep.exe -Algorithm SHA256).Hash |
+            Out-File -FilePath clean-sweep.exe.sha256 -Encoding ascii
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            clean-sweep.exe
+            clean-sweep.exe.sha256

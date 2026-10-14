@@ -1,0 +1,8 @@
+{
+  "$schema": "./_template.schema",
+  "name": "my-profile",
+  "description": "what this profile does",
+  "settings": {
+    "key": "value"
+  }
+}

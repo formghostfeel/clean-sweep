@@ -1,0 +1,41 @@
+# Build output
+bin/
+obj/
+out/
+build/
+dist/
+x64/
+x86/
+*.exe
+*.dll
+*.pdb
+*.lib
+*.ilk
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.suo
+*.user
+*.db
+ipch/
+
+# Node / TypeScript
+node_modules/
+dist-js/
+*.tsbuildinfo
+
+# Rust
+target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Logs & OS junk
+*.log
+Thumbs.db
+desktop.ini
+.DS_Store
